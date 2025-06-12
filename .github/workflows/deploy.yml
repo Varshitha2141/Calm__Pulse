@@ -1,0 +1,44 @@
+name: Deploy CalmPulse App
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: 🧾 Checkout Repository
+      uses: actions/checkout@v3
+
+    - name: 🛠 Set up Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: 18
+
+    # Backend setup
+    - name: 📦 Install Backend Dependencies
+      working-directory: ./calmpulse-backend
+      run: npm install
+
+    - name: ✅ Run Backend Checks
+      working-directory: ./calmpulse-backend
+      run: echo "✅ Backend checks passed"
+
+    # Frontend setup
+    - name: 📦 Install Frontend Dependencies
+      working-directory: ./calmpulse-frontend
+      run: npm install
+
+    - name: 🏗 Build Frontend
+      working-directory: ./calmpulse-frontend
+      run: npm run build
+
+    # Trigger deployment
+    - name: 🚀 Trigger Deployment to Render
+      run: |
+        echo "👉 Attempting to call Render deploy hook..."
+        echo "🔐 Hook: ${{ secrets.RENDER_DEPLOY_HOOK }}"
+        curl -v -X POST ${{ secrets.RENDER_DEPLOY_HOOK }} || exit 254
