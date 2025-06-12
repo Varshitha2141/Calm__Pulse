@@ -13,15 +13,22 @@ const Chat = () => {
     setInput("");
 
     try {
-      const res = await axios.post("http://localhost:5000/api/chat", {
-        message: input,
-      });
+      const res = await axios.post(
+        `${process.env.REACT_APP_API_BASE_URL}/api/chat`,
+        { message: input }
+      );
 
-      const botMessage = { sender: "bot", text: res.data.reply || "I'm here for you." };
+      const botMessage = {
+        sender: "bot",
+        text: res.data.reply || "I'm here for you.",
+      };
       setMessages((prev) => [...prev, botMessage]);
     } catch (error) {
       console.error("Error:", error);
-      const errorMsg = { sender: "bot", text: "Sorry, I couldn't fetch a reply." };
+      const errorMsg = {
+        sender: "bot",
+        text: "Sorry, I couldn't fetch a reply.",
+      };
       setMessages((prev) => [...prev, errorMsg]);
     }
   };
@@ -63,7 +70,9 @@ const Chat = () => {
               <div
                 key={i}
                 className={`d-flex mb-2 ${
-                  msg.sender === "user" ? "justify-content-end" : "justify-content-start"
+                  msg.sender === "user"
+                    ? "justify-content-end"
+                    : "justify-content-start"
                 }`}
               >
                 <div
@@ -74,9 +83,12 @@ const Chat = () => {
                   }`}
                   style={{
                     maxWidth: "75%",
-                    background:
-                      msg.sender === "user" ? "#5b7cfa" : "#ffe8cc",
-                    color: msg.sender === "user" ? "#fff" : "#6c3700",
+                    background: msg.sender === "user"
+                      ? "#5b7cfa"
+                      : "#ffe8cc",
+                    color: msg.sender === "user"
+                      ? "#fff"
+                      : "#6c3700",
                   }}
                 >
                   {msg.text}
