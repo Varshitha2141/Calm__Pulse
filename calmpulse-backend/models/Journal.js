@@ -1,4 +1,3 @@
-// models/Journal.js
 import mongoose from 'mongoose';
 
 const journalSchema = new mongoose.Schema({

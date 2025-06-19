@@ -1,14 +1,21 @@
+// src/pages/JournalPage.js
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 
-const Journal = () => {
+const JournalPage = () => {
   const [entry, setEntry] = useState({ title: "", content: "", mood: "" });
   const [entries, setEntries] = useState([]);
   const [editingId, setEditingId] = useState(null);
 
+  const API_BASE = process.env.REACT_APP_API_BASE_URL;
+
   const fetchEntries = async () => {
-    const res = await axios.get("http://localhost:5000/api/journals");
-    setEntries(res.data);
+    try {
+      const res = await axios.get(`${API_BASE}/api/journals`);
+      setEntries(res.data);
+    } catch (err) {
+      console.error("Error fetching entries:", err);
+    }
   };
 
   useEffect(() => {
@@ -18,20 +25,27 @@ const Journal = () => {
   const handleSave = async () => {
     if (!entry.title || !entry.content) return;
 
-    if (editingId) {
-      await axios.put(`http://localhost:5000/api/journals/${editingId}`, entry);
-      setEditingId(null);
-    } else {
-      await axios.post("http://localhost:5000/api/journals", entry);
+    try {
+      if (editingId) {
+        await axios.put(`${API_BASE}/api/journals/${editingId}`, entry);
+        setEditingId(null);
+      } else {
+        await axios.post(`${API_BASE}/api/journals`, entry);
+      }
+      setEntry({ title: "", content: "", mood: "" });
+      fetchEntries();
+    } catch (err) {
+      console.error("Error saving entry:", err);
     }
-
-    setEntry({ title: "", content: "", mood: "" });
-    fetchEntries();
   };
 
   const handleDelete = async (id) => {
-    await axios.delete(`http://localhost:5000/api/journals/${id}`);
-    fetchEntries();
+    try {
+      await axios.delete(`${API_BASE}/api/journals/${id}`);
+      fetchEntries();
+    } catch (err) {
+      console.error("Error deleting entry:", err);
+    }
   };
 
   const handleEdit = (journal) => {
@@ -112,4 +126,4 @@ const Journal = () => {
   );
 };
 
-export default Journal;
+export default JournalPage;

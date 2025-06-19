@@ -7,33 +7,36 @@ import mongoose from "mongoose";
 
 import chatRoutes from "./routes/chatRoutes.js";
 import qaRoutes from "./routes/qaRoutes.js";
-import journalRoutes from "./routes/journalRoutes.js"; // ✅ Add this
+import journalRoutes from "./routes/journalRoutes.js"; // ✅ Journal routes
 
-const app = express();  // Initialize app first
+const app = express(); // Initialize express app
 
 const PORT = process.env.PORT || 5000;
+const MONGODB_URI = process.env.MONGODB_URI;
 
-// Connect to MongoDB
-const mongoURI = process.env.MONGODB_URI;
-mongoose.connect(mongoURI, {
+// MongoDB connection
+mongoose.connect(MONGODB_URI, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
 })
-.then(() => console.log("MongoDB connected"))
-.catch((err) => console.error("MongoDB connection error:", err));
+.then(() => console.log("✅ MongoDB connected"))
+.catch((err) => console.error("❌ MongoDB connection error:", err));
 
+// Middleware
 app.use(cors());
 app.use(express.json());
 
+// Health check route
 app.get("/", (req, res) => {
-  res.send("CalmPulse backend is running");
+  res.send("🌱 CalmPulse backend is running");
 });
 
-// Register routes after app initialization
+// Routes
 app.use("/api/chat", chatRoutes);
 app.use("/api/qa", qaRoutes);
-app.use("/api/journals", journalRoutes); // ✅ Register journal routes
+app.use("/api/journals", journalRoutes); // ✅ Journal routes
 
+// Start server
 app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
+  console.log(`🚀 Server running on port ${PORT}`);
 });
