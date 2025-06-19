@@ -25,7 +25,7 @@ const ChatPage = () => {
     }
 
     try {
-      const res = await axios.post(`${API_BASE}/api/qa`, { message: input });
+      const res = await axios.post(`${API_BASE}/api/chat`, { message: input });
       const botMessage = {
         sender: "bot",
         text: res.data.reply || "I'm here for you.",
