@@ -1,0 +1,22 @@
+version: '3'
+services:
+  backend:
+    build: ./calmpulse-backend
+    ports:
+      - "5000:5000"
+    environment:
+      - MONGODB_URI=mongodb+srv://Varshh:Varsh%402114@calmpulse-cluster.bbzalfo.mongodb.net/?retryWrites=true&w=majority&appName=Calmpulse-cluster
+    depends_on:
+      - mongo
+
+  frontend:
+    build: ./calmpulse-frontend
+    ports:
+      - "3000:80"
+    depends_on:
+      - backend
+
+  mongo:
+    image: mongo
+    ports:
+      - "27017:27017"
