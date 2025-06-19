@@ -13,17 +13,21 @@ router.post("/", async (req, res) => {
   }
 
   try {
+    console.log("🔍 Incoming message:", message);
+
     const entry = await QA.findOne({
-      question: { $regex: message, $options: "i" }, // case-insensitive match
+      question: { $regex: message, $options: "i" }, // case-insensitive partial match
     });
+
+    console.log("📚 Matched entry:", entry);
 
     if (entry) {
       res.json({ reply: entry.answer });
     } else {
-      res.json({ reply: "Sorry, I don't have an answer for that yet." });
+      res.json({ reply: "😔 Sorry, I don't have an answer for that yet." });
     }
   } catch (error) {
-    console.error("Error fetching QA reply:", error);
+    console.error("❌ Error fetching QA reply:", error);
     res.status(500).json({ error: "Internal server error" });
   }
 });
