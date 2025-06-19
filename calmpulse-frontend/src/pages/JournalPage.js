@@ -1,5 +1,5 @@
 // src/pages/JournalPage.js
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import axios from "axios";
 
 const JournalPage = () => {
@@ -9,18 +9,19 @@ const JournalPage = () => {
 
   const API_BASE = process.env.REACT_APP_API_BASE_URL;
 
-  const fetchEntries = async () => {
+  // ✅ Wrapped in useCallback to make it stable and fix ESLint warning
+  const fetchEntries = useCallback(async () => {
     try {
       const res = await axios.get(`${API_BASE}/api/journals`);
       setEntries(res.data);
     } catch (err) {
       console.error("Error fetching entries:", err);
     }
-  };
+  }, [API_BASE]);
 
   useEffect(() => {
     fetchEntries();
-  }, []);
+  }, [fetchEntries]); // ✅ Now safe to include
 
   const handleSave = async () => {
     if (!entry.title || !entry.content) return;
@@ -102,16 +103,10 @@ const JournalPage = () => {
                       {item.mood && <p><em>Mood: {item.mood}</em></p>}
                     </div>
                     <div>
-                      <button
-                        className="btn btn-sm btn-outline-primary me-2"
-                        onClick={() => handleEdit(item)}
-                      >
+                      <button className="btn btn-sm btn-outline-primary me-2" onClick={() => handleEdit(item)}>
                         Edit
                       </button>
-                      <button
-                        className="btn btn-sm btn-outline-danger"
-                        onClick={() => handleDelete(item._id)}
-                      >
+                      <button className="btn btn-sm btn-outline-danger" onClick={() => handleDelete(item._id)}>
                         Delete
                       </button>
                     </div>
