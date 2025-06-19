@@ -1,33 +1,41 @@
 import React, { useState } from "react";
 import axios from "axios";
 
-const Chat = () => {
+const ChatPage = () => {
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
+
+  const API_BASE = process.env.REACT_APP_API_BASE_URL;
 
   const handleSend = async () => {
     if (!input.trim()) return;
 
     const userMessage = { sender: "user", text: input };
-    setMessages([...messages, userMessage]);
+    setMessages((prev) => [...prev, userMessage]);
     setInput("");
 
-    try {
-      const res = await axios.post(
-        `${process.env.REACT_APP_API_BASE_URL}/api/chat`,
-        { message: input }
-      );
+    if (!API_BASE) {
+      console.error("❌ API_BASE is undefined. Check your .env file.");
+      const errorMsg = {
+        sender: "bot",
+        text: "⚠️ Cannot reach the server. Please check your connection.",
+      };
+      setMessages((prev) => [...prev, errorMsg]);
+      return;
+    }
 
+    try {
+      const res = await axios.post(`${API_BASE}/api/qa`, { message: input });
       const botMessage = {
         sender: "bot",
         text: res.data.reply || "I'm here for you.",
       };
       setMessages((prev) => [...prev, botMessage]);
     } catch (error) {
-      console.error("Error:", error);
+      console.error("Error fetching reply:", error);
       const errorMsg = {
         sender: "bot",
-        text: "Sorry, I couldn't fetch a reply.",
+        text: "❌ Sorry, I couldn't fetch a reply.",
       };
       setMessages((prev) => [...prev, errorMsg]);
     }
@@ -76,19 +84,12 @@ const Chat = () => {
                 }`}
               >
                 <div
-                  className={`p-2 px-3 rounded shadow-sm ${
-                    msg.sender === "user"
-                      ? "bg-primary text-white"
-                      : "bg-warning-subtle text-dark border"
-                  }`}
+                  className="p-2 px-3 rounded shadow-sm"
                   style={{
                     maxWidth: "75%",
-                    background: msg.sender === "user"
-                      ? "#5b7cfa"
-                      : "#ffe8cc",
-                    color: msg.sender === "user"
-                      ? "#fff"
-                      : "#6c3700",
+                    background:
+                      msg.sender === "user" ? "#5b7cfa" : "#ffe8cc",
+                    color: msg.sender === "user" ? "#fff" : "#6c3700",
                   }}
                 >
                   {msg.text}
@@ -117,4 +118,4 @@ const Chat = () => {
   );
 };
 
-export default Chat;
+export default ChatPage;
